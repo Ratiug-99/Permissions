@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void initializeViews() {
         btn1 = findViewById(R.id.btn_one);
         btn2 = findViewById(R.id.btn_two);
