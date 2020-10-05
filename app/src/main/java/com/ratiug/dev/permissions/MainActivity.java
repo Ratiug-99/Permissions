@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -75,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 if (externalStorage){
                     downloadImage();
                 } else{
-                    Toast.makeText(MainActivity.this, "Need external write permission", Toast.LENGTH_LONG).show();
                     checkWriteExternalPermission();
                 }
             }
@@ -100,10 +100,8 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onCreate: Permission write external storage granted!");
-                externalStorage = true;
             } else {
                 Log.d(TAG, "onCreate: Permission write external storage denied!");
-                externalStorage = false;
                 requestPermissionExternalWrite();
             }
         }
@@ -114,6 +112,18 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_PERMISSION_WRITE_EXTERNAL);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case CODE_PERMISSION_WRITE_EXTERNAL:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    externalStorage = true;
+                }
+                else{
+                    externalStorage = false;
+            }
+        }
+    }
 
     private void downloadImage() {
         path = String.valueOf(etText1.getText());

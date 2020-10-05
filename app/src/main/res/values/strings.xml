@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Permissions</string>
-    <string name="button_one">Button One</string>
-    <string name="button_two">Button Two</string>
+    <string name="button_one">Download</string>
+    <string name="button_two">Set image</string>
 </resources>
