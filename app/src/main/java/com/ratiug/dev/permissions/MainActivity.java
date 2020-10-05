@@ -30,11 +30,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "DBG | MainActivity";
     private static final int CODE_PERMISSION_WRITE_EXTERNAL = 1;
     Button btn1, btn2;
-    EditText etText1, etText2;
+    EditText etText1;
     ImageView imageView;
     String path;
     String lastDownloadPath;
     Bitmap picture;
+    String filename;
     BroadcastReceiver broadcastReceiverFinishDownload;
     ///
 
@@ -47,14 +48,14 @@ public class MainActivity extends AppCompatActivity {
         initializeViews();
         checkWriteExternalPermission();
 
-        broadcastReceiverFinishDownload = new BroadcastReceiver(){
+        broadcastReceiverFinishDownload = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 btn2.setEnabled(true);
             }
         };
         IntentFilter filterFinishDownload = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        registerReceiver(broadcastReceiverFinishDownload,filterFinishDownload);
+        registerReceiver(broadcastReceiverFinishDownload, filterFinishDownload);
     }
 
 
@@ -63,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         btn2 = findViewById(R.id.btn_two);
         imageView = findViewById(R.id.iv_iamge);
         etText1 = findViewById(R.id.et_text);
-        etText2 = findViewById(R.id.et_text2);
         btn2.setEnabled(false);
 
         btn1.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +72,20 @@ public class MainActivity extends AppCompatActivity {
                 downloadImage();
             }
         });
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setImage();
+            }
+        });
+    }
+
+    private void setImage() {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+        if (file.exists()) {
+            picture = BitmapFactory.decodeFile(String.valueOf(file));
+            imageView.setImageBitmap(picture);
+        }
     }
 
     private void checkWriteExternalPermission() {
@@ -92,12 +106,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void downloadImage() {
-        Log.d(TAG, "downloadImage");
         path = String.valueOf(etText1.getText());
         if (path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".png") || path.endsWith(".bmp")) {
             String url = path;
-            String  filename = path.substring(path.lastIndexOf("/") + 1);
-            Log.d(TAG, "downloadImage: " + filename);
+            filename = path.substring(path.lastIndexOf("/") + 1);
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
             request.setDescription("Downloading...");
             request.setTitle(filename);
@@ -107,16 +119,7 @@ public class MainActivity extends AppCompatActivity {
 // get download service and enqueue file
             DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             manager.enqueue(request);
-            lastDownloadPath =  "Internal shared storage/Download/" + "android-1.jpg"; //+ filename
-            Log.d(TAG, "downloadImage: " + lastDownloadPath); //todo create correct path to last download file
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
-            if(file.exists()){
-                Log.d(TAG, "downloadImage: " + filename.toString());
-                picture = BitmapFactory.decodeFile(String.valueOf(file));
-                imageView.setImageBitmap(picture);
-            }
-
-
+            lastDownloadPath = "Internal shared storage/Download/" + "android-1.jpg"; //+ filename
         } else {
             Toast.makeText(this, "Incorrect link", Toast.LENGTH_SHORT).show();
         }
