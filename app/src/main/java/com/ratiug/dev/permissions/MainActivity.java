@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     String lastDownloadPath;
     Bitmap picture;
     String filename;
+    Boolean externalStorage = false;
     BroadcastReceiver broadcastReceiverFinishDownload;
     ///
 
@@ -69,7 +72,12 @@ public class MainActivity extends AppCompatActivity {
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                downloadImage();
+                if (externalStorage){
+                    downloadImage();
+                } else{
+                    Toast.makeText(MainActivity.this, "Need external write permission", Toast.LENGTH_LONG).show();
+                    checkWriteExternalPermission();
+                }
             }
         });
         btn2.setOnClickListener(new View.OnClickListener() {
@@ -92,8 +100,10 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onCreate: Permission write external storage granted!");
+                externalStorage = true;
             } else {
                 Log.d(TAG, "onCreate: Permission write external storage denied!");
+                externalStorage = false;
                 requestPermissionExternalWrite();
             }
         }
