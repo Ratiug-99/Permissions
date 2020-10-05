@@ -32,12 +32,5 @@
         android:layout_height="wrap_content"
         android:text="@string/button_two"/>
 
-    <EditText
-        android:id="@+id/et_text2"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"/>
-
-
-
 
 </LinearLayout>
