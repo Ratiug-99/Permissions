@@ -90,18 +90,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void setImage() {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+
+        Log.d(TAG, "setImage: " + file.exists() + " " + file.toString());
         if (file.exists()) {
-            picture = BitmapFactory.decodeFile(String.valueOf(file));
-            imageView.setImageBitmap(picture);
+            Bitmap myBitmap = BitmapFactory.decodeFile(String.valueOf(file));
+            Log.d(TAG, "setImage: " + myBitmap.toString());
+            imageView.setImageBitmap(myBitmap);
         }
     }
 
     private void checkWriteExternalPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                externalStorage = true;
                 Log.d(TAG, "onCreate: Permission write external storage granted!");
             } else {
                 Log.d(TAG, "onCreate: Permission write external storage denied!");
+                externalStorage = false;
                 requestPermissionExternalWrite();
             }
         }
@@ -139,8 +144,12 @@ public class MainActivity extends AppCompatActivity {
 // get download service and enqueue file
             DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             manager.enqueue(request);
-            lastDownloadPath = "Internal shared storage/Download/" + "android-1.jpg"; //+ filename
-        } else {
+//            lastDownloadPath = "Internal shared storage/Download/" + "android-1.jpg"; //+ filename
+        } else if (path.isEmpty()) {
+            Toast.makeText(this, "Empty link", Toast.LENGTH_SHORT).show();
+        }
+        else
+         {
             Toast.makeText(this, "Incorrect link", Toast.LENGTH_SHORT).show();
         }
     }
